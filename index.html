@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to top right, #ff9a9e, #fad0c4);
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 4em;
+      margin-top: 100px;
+      opacity: 0;
+      animation: fadeIn 2s ease-in forwards;
+    }
+
+    .message {
+      font-size: 2em;
+      margin: 20px;
+      opacity: 0;
+      animation: fadeIn 2s ease-in forwards;
+      animation-delay: 2s;
+    }
+
+    button {
+      margin-top: 50px;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background-color: #ff6f91;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff2e63;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">🎉 Happy Birthday! 🎂</h1>
+  <div class="message" id="msg" style="display:none;">
+    Wishing you joy, love, and laughter today and always! 🎈✨
+  </div>
+  <button id="startBtn">Click to Celebrate 🎁</button>
+
+  <audio id="music" src="birthday.mp3"></audio>
+
+  <canvas id="confetti"></canvas>
+
+  <script>
+    const btn = document.getElementById("startBtn");
+    const msg = document.getElementById("msg");
+    const music = document.getElementById("music");
+
+    btn.addEventListener("click", () => {
+      msg.style.display = "block";
+      music.play();
+      launchConfetti();
+      btn.style.display = "none";
+    });
+
+    // Confetti animation
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+
+    function createParticles() {
+      for (let i = 0; i < 150; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 6 + 2,
+          d: Math.random() * 50,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+          tilt: Math.floor(Math.random() * 5) - 5,
+          tiltAngle: 0,
+          tiltAngleIncrement: Math.random() * 0.07 + 0.05
+        });
+      }
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        ctx.beginPath();
+        ctx.lineWidth = p.r;
+        ctx.strokeStyle = p.color;
+        ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+        ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+        ctx.stroke();
+      });
+
+      updateParticles();
+    }
+
+    function updateParticles() {
+      for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        p.tiltAngle += p.tiltAngleIncrement;
+        p.y += (Math.cos(p.d) + 1 + p.r / 2) / 2;
+        p.x += Math.sin(p.d);
+        p.tilt = Math.sin(p.tiltAngle) * 15;
+
+        if (p.y > canvas.height) {
+          p.y = -10;
+          p.x = Math.random() * canvas.width;
+        }
+      }
+    }
+
+    function launchConfetti() {
+      createParticles();
+      setInterval(drawParticles, 30);
+    }
+
+    // Resize canvas on window resize
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
